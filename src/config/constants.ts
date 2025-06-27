@@ -25,7 +25,7 @@ if (!COOKIE_SECRET) {
 }
 
 export default {
-  isProd: ENV_MODE === 'prod' || 'production' ? true : false,
+  isProd: ENV_MODE === 'prod' || ENV_MODE === 'production',
   jwt: {
 		accessTokenSecret: JWT_ACCESS_TOKEN_SECRET,
 		accessTokenExpiresIn: JWT_ACCESS_TOKEN_EXPIRES_IN,
