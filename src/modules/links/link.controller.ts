@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Request, Response } from 'express';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req } from '@nestjs/common';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
 import { Links } from 'generated/prisma';
 import { Public } from 'src/core/decorators/public-route.decorator';
 import { CreateLinkDto } from './dtos/create-link.dto';
@@ -10,6 +10,7 @@ import { IShortUrlResponse } from './interfaces/short-url-response';
 import { LinkService } from './link.service';
 
 @ApiTags('Links')
+@ApiBearerAuth()
 @Controller('links')
 export class LinkController {
   constructor(
@@ -67,24 +68,6 @@ export class LinkController {
       accessCount: link.accessCount, 
       shortUrl: `${process.env.DOMAIN}${link.code}`} 
     ));
-  }
-
-  @ApiResponse({
-    status: 404,
-    description: 'Link not found.',
-  })
-  @ApiResponse({
-    status: 302,
-    description: 'Redirects to the original URL.',
-  })
-  @Public()
-  @Get(':code')
-  async redirectToOriginalUrl(
-    @Param('code') code: string,
-    @Res() res: Response,
-  ): Promise<void> {
-    const { originalUrl } = await this.linkService.redirectToOriginalUrl(code);
-    return res.redirect(302, originalUrl);
   }
 
   @ApiResponse({

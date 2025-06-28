@@ -23,10 +23,11 @@ async function bootstrap() {
 			.setTitle('API Teste | Teddy Open Finance')
 			.setDescription('Documentation of Teddy Open Finance API')
 			.setVersion('1.0.0')
-			.addCookieAuth('accessToken', {
-				type: 'http',
-				in: 'Header',
-				scheme: 'Bearer'
+			.addBearerAuth({
+				name: "Authorization",
+				in: "header",
+				type: 'apiKey',
+				description: "Enter your bearer token in the format: Bearer {token}",
 			})
 			.build()
 
