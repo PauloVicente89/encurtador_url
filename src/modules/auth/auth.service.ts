@@ -5,6 +5,7 @@ import { Users } from 'generated/prisma';
 import { UserService } from '../users/user.service';
 import { LoginDto } from './dtos/login.dto';
 import { SignUpDto } from './dtos/signup.dto';
+import { ILoginResponse } from './interfaces/login-response';
 
 @Injectable()
 export class AuthService {
@@ -15,9 +16,7 @@ export class AuthService {
 
   async signUp(body: SignUpDto): Promise<Users> {
     const existingUser = await this.userService.findBy({ email: body.email });
-    if(existingUser) {
-      throw new UnauthorizedException('Email already registered');
-    }
+    if(existingUser) throw new UnauthorizedException('Email already registered');
     const hashedPassword = await hash(body.password, 10);
     return await this.userService.create({
       ...body,
@@ -25,7 +24,7 @@ export class AuthService {
     });
   }
 
-  async login(body: LoginDto): Promise<any> {
+  async login(body: LoginDto): Promise<ILoginResponse> {
 		const validUser = await this.validateUserLogin(body.email, body.password)
     const payload = { 
       sub: validUser.id,

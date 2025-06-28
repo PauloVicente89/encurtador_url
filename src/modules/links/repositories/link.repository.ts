@@ -1,8 +1,8 @@
 import { Links } from "generated/prisma";
-import { ICriteria } from "src/utils/interfaces/ICriteria";
+import { ICriteria } from "src/utils/interfaces/criteria";
 import { CreateLinkDto } from "../dtos/create-link.dto";
 import { UpdateLinkDto } from "../dtos/update-link.dto";
-import { IFindAllParams } from "src/utils/interfaces/IFindAllParams";
+import { IFindAllParams } from "src/utils/interfaces/findall-params";
 
 export abstract class LinkRepository {
   abstract create(body: CreateLinkDto): Promise<Links>;

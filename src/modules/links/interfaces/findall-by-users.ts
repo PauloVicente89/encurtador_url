@@ -1,5 +1,5 @@
-import { ICriteria } from "src/utils/interfaces/ICriteria";
-import { IPagination } from "src/utils/interfaces/IPagination";
+import { ICriteria } from "src/utils/interfaces/criteria";
+import { IPagination } from "src/utils/interfaces/pagination";
 
 export interface IFilters {
   userId?: string;

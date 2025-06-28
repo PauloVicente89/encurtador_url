@@ -1,10 +1,10 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Links } from 'generated/prisma';
-import { ICriteria } from 'src/utils/interfaces/ICriteria';
-import { IFindAllParams } from 'src/utils/interfaces/IFindAllParams';
+import { IFindAllParams } from 'src/utils/interfaces/findall-params';
 import { generateRandomCode } from 'src/utils/random-code-generator';
 import { CreateLinkDto } from './dtos/create-link.dto';
 import { UpdateLinkDto } from './dtos/update-link.dto';
+import { IOriginalUrlResponse, IShortUrlResponse } from './interfaces/short-url-response';
 import { LinkRepository } from './repositories/link.repository';
 
 @Injectable()
@@ -29,7 +29,7 @@ export class LinkService {
     return await this.linkRepository.findAll({ criteria, pagination, fields });
   }
 
-  async redirectToOriginalUrl(code: string): Promise<{ originalUrl: string }> {
+  async redirectToOriginalUrl(code: string): Promise<IOriginalUrlResponse> {
     const link = await this.linkRepository.findBy({ code });
     if(!link || link.deletedAt) throw new NotFoundException("Link not found");
     await this.linkRepository.update(link.id, { accessCount: link.accessCount + 1 });
@@ -37,13 +37,12 @@ export class LinkService {
   }
 
   async update(id: string, data: UpdateLinkDto): Promise<Links> {
-    const link = await this.linkRepository.findBy({ id });
-    if(!link || link.deletedAt) throw new NotFoundException("Link not found");
-    if(link.userId !== data.userId) throw new ForbiddenException("You do not have permission to update this link");
-    return await this.linkRepository.update(id, {
-      ...data,
-      code: link.code,
-    });
+    return await this.linkRepository.update(id, data);
+  }
+
+  async updateOriginalUrl(id: string, originalUrl: string): Promise<IShortUrlResponse> {
+    const link = await this.linkRepository.update(id, { originalUrl });
+    return { shortUrl: `${process.env.DOMAIN}${link.code}` };
   }
 
   async softDelete(id: string, userId: string): Promise<void> {

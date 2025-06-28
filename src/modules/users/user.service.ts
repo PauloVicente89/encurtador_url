@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Users } from 'generated/prisma';
-import { ICriteria } from 'src/utils/interfaces/ICriteria';
+import { ICriteria } from 'src/utils/interfaces/criteria';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UserRepository } from './repositories/user.repository';
 

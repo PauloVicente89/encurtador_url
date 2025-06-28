@@ -16,8 +16,8 @@ async function bootstrap() {
 	}));
 
   if (
-		process.env.ENV_MODE === 'prod' || 
-		process.env.ENV_MODE === 'production'
+		process.env.NODE_ENV === 'dev' || 
+		process.env.NODE_ENV === 'development'
 	) {
 		const config = new DocumentBuilder()
 			.setTitle('API Teste | Teddy Open Finance')

@@ -1,5 +1,5 @@
-import { ICriteria } from "./ICriteria";
-import { IPagination } from "./IPagination";
+import { ICriteria } from "./criteria";
+import { IPagination } from "./pagination";
 
 export interface IFindAllParams {
   criteria?: ICriteria;

@@ -1,15 +1,14 @@
 import { Links, PrismaClient } from "generated/prisma";
-import { ICriteria } from "src/utils/interfaces/ICriteria";
-import { IFindAllParams } from "src/utils/interfaces/IFindAllParams";
+import { ICriteria } from "src/utils/interfaces/criteria";
+import { IFindAllParams } from "src/utils/interfaces/findall-params";
 import { CreateLinkDto } from "../dtos/create-link.dto";
 import { UpdateLinkDto } from "../dtos/update-link.dto";
+import { IFilters } from "../interfaces/findall-by-users";
 import { LinkRepository } from "./link.repository";
-import { IFilters } from "../interfaces/IFindAllByUser";
 
 export default class PrismaLinkRepository implements LinkRepository 
 {
   private readonly prisma: PrismaClient;
-  
   constructor() {
     this.prisma = new PrismaClient();
   }

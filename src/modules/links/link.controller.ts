@@ -1,34 +1,53 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from '@nestjs/common';
-import { Response, Request } from 'express';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Request, Response } from 'express';
+import { Links } from 'generated/prisma';
 import { Public } from 'src/core/decorators/public-route.decorator';
 import { CreateLinkDto } from './dtos/create-link.dto';
-import { UpdateLinkDto } from './dtos/update-link.dto';
+import { UpdateOriginalUrlDto } from './dtos/update-original-url.dto';
+import { IQueryFilters } from './interfaces/findall-by-users';
+import { IShortUrlResponse } from './interfaces/short-url-response';
 import { LinkService } from './link.service';
-import { Links } from 'generated/prisma';
-import { IQueryFilters } from './interfaces/IFindAllByUser';
 
+@ApiTags('Links')
 @Controller('links')
 export class LinkController {
   constructor(
     private readonly linkService: LinkService,
   ) {}
 
+  @ApiResponse({
+    status: 201,
+    description: 'The short URL has been successfully created.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'The request body is invalid or missing required fields.',
+  })
   @Public()
   @Post()
   async create(
     @Body() body: CreateLinkDto,
     @Req() req: Request,
-  ): Promise<{ shortUrl: string }> {
+  ): Promise<IShortUrlResponse> {
     const userId = req.user ? req.user['sub'] : null;
     const link = await this.linkService.create(body, userId);
     return { shortUrl: `${process.env.DOMAIN}${link.code}` };
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'The list of short URLs with their access counts.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized access. User must be logged in to view their links.',
+  })
   @Get()
   async findAllByUser(
     @Req() req: Request,
     @Query() filters: IQueryFilters,
-  ): Promise<{ accessCount: number; shortUrl: string }[]> 
+  ): Promise<IShortUrlResponse[]> 
   {
     const userId = req.user ? req.user['sub'] : null;
     const links = await this.linkService.findAll({
@@ -50,24 +69,56 @@ export class LinkController {
     ));
   }
 
+  @ApiResponse({
+    status: 404,
+    description: 'Link not found.',
+  })
+  @ApiResponse({
+    status: 302,
+    description: 'Redirects to the original URL.',
+  })
+  @Public()
   @Get(':code')
   async redirectToOriginalUrl(
     @Param('code') code: string,
     @Res() res: Response,
   ): Promise<void> {
     const { originalUrl } = await this.linkService.redirectToOriginalUrl(code);
-    return res.redirect(originalUrl);
+    return res.redirect(302, originalUrl);
   }
 
-  @Patch(':id')
-  async update(
+  @ApiResponse({
+    status: 201,
+    description: 'The original URL has been successfully updated.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized access. User must be logged in to view their links.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Link not found.',
+  })
+  @Patch('url/:id')
+  async updateOriginalUrl(
     @Param('id') id: string,
-    @Body() body: UpdateLinkDto,
-  ): Promise<{ shortUrl: string }> {
-    const link = await this.linkService.update(id, body);
-    return { shortUrl: `${process.env.DOMAIN}${link.code}` };
+    @Body() body: UpdateOriginalUrlDto,
+  ): Promise<IShortUrlResponse> {
+    return await this.linkService.updateOriginalUrl(id, body.originalUrl);
   }
 
+  @ApiResponse({
+    status: 404,
+    description: 'Link not found.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'You do not have permission to delete this link.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized access. User must be logged in to view their links.',
+  })
   @Delete(':id')
   async softDelete(
     @Param('id') id: string,
