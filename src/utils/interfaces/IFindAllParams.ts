@@ -1,11 +1,10 @@
 import { ICriteria } from "./ICriteria";
+import { IPagination } from "./IPagination";
 
 export interface IFindAllParams {
   criteria?: ICriteria;
   pagination: IPagination;
+  fields?: {
+    [key: string]: boolean;
+  }
 };
-
-interface IPagination {
-  page: number;
-  perPage: number;
-}

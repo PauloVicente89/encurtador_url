@@ -1,11 +1,10 @@
 import { Links, PrismaClient } from "generated/prisma";
-import { CreateLinkDto } from "../dtos/create-link.dto";
-import { LinkRepository } from "./link.repository";
-import { UpdateLinkDto } from "../dtos/update-link.dto";
-import { IFindAllParams } from "src/utils/interfaces/IFindAll";
 import { ICriteria } from "src/utils/interfaces/ICriteria";
-import { IFilters } from "../interfaces/IFilters";
-import { IFindAllByUserResponse } from "../interfaces/IResponses";
+import { IFindAllParams } from "src/utils/interfaces/IFindAllParams";
+import { CreateLinkDto } from "../dtos/create-link.dto";
+import { UpdateLinkDto } from "../dtos/update-link.dto";
+import { LinkRepository } from "./link.repository";
+import { IFilters } from "../interfaces/IFindAllByUser";
 
 export default class PrismaLinkRepository implements LinkRepository 
 {
@@ -21,7 +20,7 @@ export default class PrismaLinkRepository implements LinkRepository
     });
   }
 
-  async findAllByUser({ criteria, pagination }: IFindAllParams): Promise<IFindAllByUserResponse[]> {
+  async findAll({ criteria, pagination, fields }: IFindAllParams): Promise<Partial<Links>[]> {
     const page = pagination.page || 1;
     const perPage = pagination.perPage || 20;
     const skip = (page - 1) * perPage;
@@ -35,10 +34,7 @@ export default class PrismaLinkRepository implements LinkRepository
       where: where,
       take: +perPage,
       skip: +skip,
-      select: {
-        accessCount: true,
-        code: true,
-      }
+      select: fields,
     });
   }
 

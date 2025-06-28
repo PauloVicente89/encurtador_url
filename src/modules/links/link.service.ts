@@ -1,11 +1,10 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Links } from 'generated/prisma';
-import { IFindAllParams } from 'src/utils/interfaces/IFindAll';
+import { IFindAllParams } from 'src/utils/interfaces/IFindAllParams';
 import { generateRandomCode } from 'src/utils/random-code-generator';
 import { CreateLinkDto } from './dtos/create-link.dto';
 import { UpdateLinkDto } from './dtos/update-link.dto';
 import { LinkRepository } from './repositories/link.repository';
-import { IFindAllByUserResponse } from './interfaces/IResponses';
 
 @Injectable()
 export class LinkService {
@@ -25,8 +24,8 @@ export class LinkService {
     return await this.linkRepository.create(link);
   }
 
-  async findAllByUser({ criteria, pagination }: IFindAllParams): Promise<IFindAllByUserResponse[]> {
-    return await this.linkRepository.findAllByUser({ criteria, pagination });
+  async findAll({ criteria, pagination, fields }: IFindAllParams): Promise<Partial<Links>[]> {
+    return await this.linkRepository.findAll({ criteria, pagination, fields });
   }
 
   async update(id: string, data: UpdateLinkDto): Promise<Links> {
