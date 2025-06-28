@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { Links } from 'generated/prisma';
 import { Public } from 'src/core/decorators/public-route.decorator';
-import { CreateLinkDto } from './dtos/create-link.dto';
+import { CreateShortUrlDto } from './dtos/create-short-url.dto';
 import { UpdateOriginalUrlDto } from './dtos/update-original-url.dto';
 import { IQueryFilters } from './interfaces/findall-by-users';
 import { IShortUrlResponse } from './interfaces/short-url-response';
@@ -28,11 +28,11 @@ export class LinkController {
   @Public()
   @Post()
   async create(
-    @Body() body: CreateLinkDto,
+    @Body() body: CreateShortUrlDto,
     @Req() req: Request,
   ): Promise<IShortUrlResponse> {
     const userId = req.user ? req.user['sub'] : null;
-    const link = await this.linkService.create(body, userId);
+    const link = await this.linkService.create({ originalUrl: body.originalUrl }, userId);
     return { shortUrl: `${process.env.DOMAIN}${link.code}` };
   }
 

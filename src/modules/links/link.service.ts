@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { Links } from 'generated/prisma';
 import { IFindAllParams } from 'src/utils/interfaces/findall-params';
 import { generateRandomCode } from 'src/utils/random-code-generator';
-import { CreateLinkDto } from './dtos/create-link.dto';
+import { CreateShortUrlDto } from './dtos/create-short-url.dto';
 import { UpdateLinkDto } from './dtos/update-link.dto';
 import { IOriginalUrlResponse, IShortUrlResponse } from './interfaces/short-url-response';
 import { LinkRepository } from './repositories/link.repository';
@@ -13,7 +13,7 @@ export class LinkService {
     private readonly linkRepository: LinkRepository,
   ) {}
 
-  async create(data: CreateLinkDto, userId?: string): Promise<Links> {
+  async create(data: CreateShortUrlDto, userId?: string): Promise<Links> {
     const link = {
       ...data,
       userId: userId ? userId : null,
