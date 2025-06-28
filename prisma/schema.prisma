@@ -24,7 +24,7 @@ model Users {
 model Links {
   id            String    @id @default(uuid())
   originalUrl   String    @map("original_url")
-  shortUrl      String    @unique @map("short_url")
+  code          String    @unique @db.Char(6)
   userId        String?   @map("user_id")
   accessCount   Int       @default(0) @map("access_count")
   createdAt     DateTime  @default(now()) @map("created_at")

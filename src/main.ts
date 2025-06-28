@@ -1,13 +1,10 @@
-import { NestFactory, Reflector } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
-import constants from '@config/constants';
-import * as cookieParser from 'cookie-parser';
+import { NestFactory, Reflector } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-	app.use(cookieParser(constants.cookie.secret));
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.enableCors({
 		origin: true,
@@ -18,7 +15,10 @@ async function bootstrap() {
 		whitelist: true,
 	}));
 
-  if (!constants.isProd) {
+  if (
+		process.env.ENV_MODE === 'prod' || 
+		process.env.ENV_MODE === 'production'
+	) {
 		const config = new DocumentBuilder()
 			.setTitle('API Teste | Teddy Open Finance')
 			.setDescription('Documentation of Teddy Open Finance API')

@@ -18,7 +18,7 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@config/*": ["./src/config/*"],
+      "@config/*": ["src/core/config/*"],
     }
   }
 }

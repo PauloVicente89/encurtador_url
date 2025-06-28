@@ -4,6 +4,8 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dtos/login.dto';
 import { SignUpDto } from './dtos/signup.dto';
 import { ILoginResponse } from './interfaces/login-response.interface';
+import { Public } from 'src/core/decorators/public-route.decorator';
+import { UserEntity } from '../users/entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -11,11 +13,14 @@ export class AuthController {
     private readonly authService: AuthService,
   ){}
 
+  @Public()
   @Post('signup')
   async signUp(@Body() body: SignUpDto): Promise<Users> {
-    return await this.authService.signUp(body);
+    const user = await this.authService.signUp(body);
+    return new UserEntity(user);
   }
 
+  @Public()
   @Post('login')
   async login(
     @Body() body: LoginDto,

@@ -1,13 +1,10 @@
-import constants from '@config/constants';
 import { BadGatewayException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
-import { Response } from 'express';
 import { Users } from 'generated/prisma';
 import { UserService } from '../users/user.service';
 import { LoginDto } from './dtos/login.dto';
 import { SignUpDto } from './dtos/signup.dto';
-import { ILoginResponse } from './interfaces/login-response.interface';
 
 @Injectable()
 export class AuthService {
