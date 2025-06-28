@@ -1,7 +1,7 @@
 import { PrismaClient, Users } from "generated/prisma";
-import { UserRepository } from "./user.repository";
-import { CreateUserDto } from "../dtos/create-user.dto";
 import { ICriteria } from "src/utils/interfaces/ICriteria";
+import { CreateUserDto } from "../dtos/create-user.dto";
+import { UserRepository } from "./user.repository";
 
 export default class PrismaUserRepository implements UserRepository 
 {

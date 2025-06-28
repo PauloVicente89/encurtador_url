@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req } from '@nestjs/common';
-import { Request } from 'express';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from '@nestjs/common';
+import { Response, Request } from 'express';
 import { Public } from 'src/core/decorators/public-route.decorator';
 import { CreateLinkDto } from './dtos/create-link.dto';
 import { UpdateLinkDto } from './dtos/update-link.dto';
@@ -48,6 +48,15 @@ export class LinkController {
       accessCount: link.accessCount, 
       shortUrl: `${process.env.DOMAIN}${link.code}`} 
     ));
+  }
+
+  @Get(':code')
+  async redirectToOriginalUrl(
+    @Param('code') code: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    const { originalUrl } = await this.linkService.redirectToOriginalUrl(code);
+    return res.redirect(originalUrl);
   }
 
   @Patch(':id')

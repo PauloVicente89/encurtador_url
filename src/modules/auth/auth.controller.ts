@@ -3,7 +3,7 @@ import { Users } from 'generated/prisma';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dtos/login.dto';
 import { SignUpDto } from './dtos/signup.dto';
-import { ILoginResponse } from './interfaces/login-response.interface';
+import { ILoginResponse } from './interfaces/ILoginResponse';
 import { Public } from 'src/core/decorators/public-route.decorator';
 import { UserEntity } from '../users/entities/user.entity';
 

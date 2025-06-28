@@ -26,24 +26,20 @@ export class AuthService {
   }
 
   async login(body: LoginDto): Promise<any> {
-		try {
-			const validUser = await this.validateUserLogin(body.email, body.password)
-      const payload = { 
-        sub: validUser.id,
+		const validUser = await this.validateUserLogin(body.email, body.password)
+    const payload = { 
+      sub: validUser.id,
+      email: validUser.email,
+      name: validUser.name,
+    }
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+      user: {
+        id: validUser.id,
         email: validUser.email,
         name: validUser.name,
       }
-      return {
-        access_token: await this.jwtService.signAsync(payload),
-        user: {
-          id: validUser.id,
-          email: validUser.email,
-          name: validUser.name,
-        }
-      }
-		} catch (error) {
-			throw new BadGatewayException('Login failed', error.message);
-		}
+    }
 	}
 
   private async validateUserLogin(email: string, password: string): Promise<Users> {
