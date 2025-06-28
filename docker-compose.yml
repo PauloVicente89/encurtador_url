@@ -6,24 +6,33 @@ services:
       - .env
     volumes:
       - .:/app
+      - /app/node_modules
     ports:
       - "3000:3000"
     build:
       context: .
       dockerfile: ./Dockerfile
     environment:
-      NODE_ENV: dev
+      NODE_ENV: development
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - web_network
 
   db:
     container_name: db
-    image: postgres:15-alpine
+    image: postgres:15
     restart: always
     ports:
       - "5432:5432"
+    volumes:
+      - ./data/postgres/data:/var/lib/postgresql/data/
     env_file:
       - .env
+    healthcheck:
+      test: "pg_isready -U postgres"
+      interval: 5s
     networks:
       - web_network
 

@@ -1,15 +1,18 @@
-FROM node:24-alpine3.21
+FROM node:22-alpine
 
 ARG NODE_ENV
+ENV NODE_ENV=${NODE_ENV:-development}
 
 WORKDIR /app
 
 COPY package*.json ./
-COPY prisma ./prisma/
-COPY . . 
-
 RUN npm ci
+
+COPY prisma ./prisma/
+RUN npx prisma generate
+
+COPY . .
 
 EXPOSE 3000
 
-CMD [ "npm", "run", "start:dev" ]
+CMD ["npm", "run", "start:dev"]

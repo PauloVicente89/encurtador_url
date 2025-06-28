@@ -44,7 +44,7 @@ export class LinkController {
     status: 401,
     description: 'Unauthorized access. User must be logged in to view their links.',
   })
-  @Get()
+  @Get('user')
   async findAllByUser(
     @Req() req: Request,
     @Query() filters: IQueryFilters,
