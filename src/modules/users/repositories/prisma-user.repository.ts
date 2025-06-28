@@ -1,7 +1,7 @@
 import { PrismaClient, Users } from "generated/prisma";
 import { UserRepository } from "./user.repository";
 import { CreateUserDto } from "../dtos/create-user.dto";
-import { IFindBy } from "src/utils/interfaces/IFindBy";
+import { ICriteria } from "src/utils/interfaces/ICriteria";
 
 export default class PrismaUserRepository implements UserRepository 
 {
@@ -17,7 +17,7 @@ export default class PrismaUserRepository implements UserRepository
     });
   }
 
-  async findBy(criteria: IFindBy): Promise<Users | null> {
+  async findBy(criteria: ICriteria): Promise<Users | null> {
     return await this.prisma.users.findFirst({
       where: criteria,
     });

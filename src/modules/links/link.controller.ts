@@ -1,8 +1,12 @@
-import { Body, Controller, Delete, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req } from '@nestjs/common';
 import { Request } from 'express';
+import { Links } from 'generated/prisma';
 import { Public } from 'src/core/decorators/public-route.decorator';
 import { CreateLinkDto } from './dtos/create-link.dto';
+import { UpdateLinkDto } from './dtos/update-link.dto';
+import { IQueryFilters } from './interfaces/IFilters';
 import { LinkService } from './link.service';
+import { IFindAllByUserResponse } from './interfaces/IResponses';
 
 @Controller('links')
 export class LinkController {
@@ -18,6 +22,33 @@ export class LinkController {
   ): Promise<{ shortUrl: string }> {
     const userId = req.user ? req.user['sub'] : null;
     const link = await this.linkService.create(body, userId);
+    return { shortUrl: `${process.env.DOMAIN}${link.code}` };
+  }
+
+  @Get()
+  async findAllByUser(
+    @Req() req: Request,
+    @Query() filters: IQueryFilters,
+  ): Promise<IFindAllByUserResponse[]> {
+    const userId = req.user ? req.user['sub'] : null;
+    const links = await this.linkService.findAllByUser({
+      pagination: {
+        page: filters?.page || 1,
+        perPage: filters?.perPage || 10,
+      },
+      criteria: {
+        userId: userId,
+      },
+    });
+    return links.map((link) => ({ accessCount: link.accessCount, shortUrl: `${process.env.DOMAIN}${link.code}`} ));
+  }
+
+  @Patch(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() body: UpdateLinkDto,
+  ): Promise<{ shortUrl: string }> {
+    const link = await this.linkService.update(id, body);
     return { shortUrl: `${process.env.DOMAIN}${link.code}` };
   }
 

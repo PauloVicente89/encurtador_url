@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from './repositories/user.repository';
 import { Users } from 'generated/prisma';
 import { CreateUserDto } from './dtos/create-user.dto';
-import { IFindBy } from 'src/utils/interfaces/IFindBy';
+import { ICriteria } from 'src/utils/interfaces/ICriteria';
 import { compare } from 'bcrypt';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class UserService {
     return await this.userRepository.create(data);
   }
 
-  async findBy(criteria: IFindBy): Promise<Users | null> {
+  async findBy(criteria: ICriteria): Promise<Users | null> {
     return await this.userRepository.findBy(criteria);
   }
 }
