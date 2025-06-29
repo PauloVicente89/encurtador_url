@@ -22,12 +22,18 @@ URL: http://localhost:3000/docs
 
 * Para usar o seu link de redirecionamento, basta inserir o retorno da API na barra de pesquisa do navegador *
 
+A API é inicializada no modo cluster: 
+- Para aplicativos Node.js, o PM2 inclui um balanceador de carga automático que compartilhará todas as conexões HTTP[s]/Websocket/TCP/UDP entre cada processo gerado
+
 ## Observabilidade
 Para monitorar o funcionamento da API:
 - docker exec -it api pm2 monit
 
 Caso queira observar apenas as ultimas 200 linhas dos logs:
 - docker exec -it api pm2 logs --lines 200
+
+Caso queira uma observabilidade com gráficos em uma dashboard (Exige autenticação):
+- docker exec -it api pm2 plus
 
 ## Pontos de melhoria
 1. Em caso de escalabilidade horizontal seria interessante dividir a aplicação em microserviços:

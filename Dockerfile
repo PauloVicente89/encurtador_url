@@ -16,4 +16,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["pm2", "start", "dist/main.js", "--name", "teddy-open-finance", "--no-daemon"]
+CMD ["pm2", "start", "dist/main.js", "--name", "teddy-open-finance", "-i", "max", "--no-daemon"]
