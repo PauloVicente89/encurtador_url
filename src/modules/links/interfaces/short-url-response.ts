@@ -5,6 +5,7 @@ export interface IOriginalUrlResponse {
 }
 
 export interface IShortUrlResponse {
+  id?: string;
   shortUrl?: string;
   accessCount?: number;
 }

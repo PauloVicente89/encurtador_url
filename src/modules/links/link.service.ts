@@ -1,9 +1,9 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Links } from 'generated/prisma';
-import { IFindAllParams } from 'src/utils/interfaces/findall-params';
-import { generateRandomCode } from 'src/utils/random-code-generator';
+import { formatShortUrl, generateRandomCode } from 'src/utils/link-utilities';
 import { CreateShortUrlDto } from './dtos/create-short-url.dto';
 import { UpdateLinkDto } from './dtos/update-link.dto';
+import { IFindLinksByUserParams } from './interfaces/findall-by-users';
 import { IOriginalUrlResponse, IShortUrlResponse } from './interfaces/short-url-response';
 import { LinkRepository } from './repositories/link.repository';
 
@@ -25,8 +25,16 @@ export class LinkService {
     return await this.linkRepository.create(link);
   }
 
-  async findAll({ criteria, pagination, fields }: IFindAllParams): Promise<Partial<Links>[]> {
-    return await this.linkRepository.findAll({ criteria, pagination, fields });
+  async findAllByUser(data: IFindLinksByUserParams): Promise<Partial<Links>[]> {
+    const links = await this.linkRepository.findAllByUser({
+      pagination: data.pagination,
+      userId: data.userId,
+    });
+    return links.map((link: Links) => ({
+      id: link.id,
+      accessCount: link.accessCount,
+      shortUrl: formatShortUrl(link.code),
+    }));
   }
 
   async redirectToOriginalUrl(code: string): Promise<IOriginalUrlResponse> {
@@ -42,7 +50,7 @@ export class LinkService {
 
   async updateOriginalUrl(id: string, originalUrl: string): Promise<IShortUrlResponse> {
     const link = await this.linkRepository.update(id, { originalUrl });
-    return { shortUrl: `${process.env.DOMAIN}${link.code}` };
+    return { shortUrl: formatShortUrl(link.code) };
   }
 
   async softDelete(id: string, userId: string): Promise<void> {

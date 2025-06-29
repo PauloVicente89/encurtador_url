@@ -1,5 +1,5 @@
 import { Users } from "generated/prisma";
-import { ICriteria } from "src/utils/interfaces/criteria";
+import { ICriteria } from "src/utils/interfaces/filters-pagination";
 import { CreateUserDto } from "../dtos/create-user.dto";
 
 export abstract class UserRepository {

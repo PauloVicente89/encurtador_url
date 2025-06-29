@@ -1,11 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, Res } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Request } from 'express';
-import { Links } from 'generated/prisma';
+import { Request, Response } from 'express';
 import { Public } from 'src/core/decorators/public-route.decorator';
+import { IFiltersWithPagination } from 'src/utils/interfaces/filters-pagination';
+import { formatShortUrl } from 'src/utils/link-utilities';
 import { CreateShortUrlDto } from './dtos/create-short-url.dto';
 import { UpdateOriginalUrlDto } from './dtos/update-original-url.dto';
-import { IQueryFilters } from './interfaces/findall-by-users';
 import { IShortUrlResponse } from './interfaces/short-url-response';
 import { LinkService } from './link.service';
 
@@ -33,7 +33,7 @@ export class LinkController {
   ): Promise<IShortUrlResponse> {
     const userId = req.user ? req.user['sub'] : null;
     const link = await this.linkService.create({ originalUrl: body.originalUrl }, userId);
-    return { shortUrl: `${process.env.DOMAIN}${link.code}` };
+    return { shortUrl: formatShortUrl(link.code) };
   }
 
   @ApiResponse({
@@ -47,27 +47,35 @@ export class LinkController {
   @Get('user')
   async findAllByUser(
     @Req() req: Request,
-    @Query() filters: IQueryFilters,
+    @Query() filters: IFiltersWithPagination,
   ): Promise<IShortUrlResponse[]> 
   {
     const userId = req.user ? req.user['sub'] : null;
-    const links = await this.linkService.findAll({
+    return await this.linkService.findAllByUser({
       pagination: {
         page: filters?.page || 1,
         perPage: filters?.perPage || 10,
       },
-      criteria: {
-        userId: userId,
-      },
-      fields: {
-        accessCount: true,
-        code: true,
-      },
+      userId: userId,
     });
-    return links.map((link: Links) => ({ 
-      accessCount: link.accessCount, 
-      shortUrl: `${process.env.DOMAIN}${link.code}`} 
-    ));
+  }
+
+  @ApiResponse({
+    status: 404,
+    description: 'Link not found.',
+  })
+  @ApiResponse({
+    status: 302,
+    description: 'Redirects to the original URL.',
+  })
+  @Public()
+  @Get(':code')
+  async redirectToOriginalUrl(
+    @Param('code') code: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    const { originalUrl } = await this.linkService.redirectToOriginalUrl(code);
+    return res.redirect(302, originalUrl);
   }
 
   @ApiResponse({

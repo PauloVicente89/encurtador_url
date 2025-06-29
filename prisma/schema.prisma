@@ -34,4 +34,5 @@ model Links {
 
   users      Users?     @relation(fields: [userId], references: [id])
   @@map("links")
+  @@index([code])
 }

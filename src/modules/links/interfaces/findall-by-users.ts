@@ -1,17 +1,7 @@
-import { ICriteria } from "src/utils/interfaces/criteria";
-import { IPagination } from "src/utils/interfaces/pagination";
+import { IPagination } from "src/utils/interfaces/filters-pagination";
 
-export interface IFilters {
-  userId?: string;
-}
-
-export interface IQueryFilters extends ICriteria {
-  page?: number;
-  perPage?: number;
-}
-
-export interface IFindAllByUserParams {
-  criteria?: ICriteria;
+export interface IFindLinksByUserParams {
+  userId: string;
   pagination: IPagination;
 };
 

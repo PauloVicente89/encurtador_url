@@ -7,3 +7,8 @@ export function generateRandomCode(len: number): string {
   }
   return code;
 }
+
+export function formatShortUrl(code: string): string {
+  const domain = process.env.DOMAIN;
+  return `${domain}links/${code}`;
+}
