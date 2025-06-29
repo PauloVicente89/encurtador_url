@@ -1,6 +1,5 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Links } from 'generated/prisma';
-import { formatShortUrl, generateRandomCode } from 'src/utils/link-utilities';
 import { CreateShortUrlDto } from './dtos/create-short-url.dto';
 import { UpdateLinkDto } from './dtos/update-link.dto';
 import { IFindLinksByUserParams } from './interfaces/findall-by-users';
@@ -17,10 +16,10 @@ export class LinkService {
     const link = {
       ...data,
       userId: userId ? userId : null,
-      code: generateRandomCode(6),
+      code: this.generateRandomCode(6),
     }
     while(await this.isCodeDuplicate(link.code)) {
-      link.code = generateRandomCode(6);
+      link.code = this.generateRandomCode(6);
     }
     return await this.linkRepository.create(link);
   }
@@ -33,7 +32,7 @@ export class LinkService {
     return links.map((link: Links) => ({
       id: link.id,
       accessCount: link.accessCount,
-      shortUrl: formatShortUrl(link.code),
+      shortUrl: this.formatShortUrl(link.code),
     }));
   }
 
@@ -50,7 +49,7 @@ export class LinkService {
 
   async updateOriginalUrl(id: string, originalUrl: string): Promise<IShortUrlResponse> {
     const link = await this.linkRepository.update(id, { originalUrl });
-    return { shortUrl: formatShortUrl(link.code) };
+    return { shortUrl: this.formatShortUrl(link.code) };
   }
 
   async softDelete(id: string, userId: string): Promise<void> {
@@ -63,5 +62,20 @@ export class LinkService {
   private async isCodeDuplicate(code: string): Promise<boolean> {
     const existingProduct = await this.linkRepository.findBy({ code });
     return !!existingProduct;
+  }
+
+  private formatShortUrl(code: string): string {
+    const domain = process.env.DOMAIN;
+    return `${domain}links/${code}`;
+  }
+
+  private generateRandomCode(len: number): string {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let code = '';
+    for (let i = 0; i < len; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      code += characters[randomIndex];
+    }
+    return code;
   }
 }
