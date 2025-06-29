@@ -1,5 +1,6 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Links } from 'generated/prisma';
+import { generateRandomCode } from 'src/utils/code-generator';
 import { CreateShortUrlDto } from './dtos/create-short-url.dto';
 import { UpdateLinkDto } from './dtos/update-link.dto';
 import { IFindLinksByUserParams } from './interfaces/findall-by-users';
@@ -16,10 +17,10 @@ export class LinkService {
     const link = {
       ...data,
       userId: userId ? userId : null,
-      code: this.generateRandomCode(6),
+      code: generateRandomCode(6),
     }
     while(await this.isCodeDuplicate(link.code)) {
-      link.code = this.generateRandomCode(6);
+      link.code = generateRandomCode(6);
     }
     return await this.linkRepository.create(link);
   }
@@ -64,18 +65,9 @@ export class LinkService {
     return !!existingProduct;
   }
 
-  private formatShortUrl(code: string): string {
+  formatShortUrl(code: string): string {
     const domain = process.env.DOMAIN;
     return `${domain}links/${code}`;
   }
 
-  private generateRandomCode(len: number): string {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let code = '';
-    for (let i = 0; i < len; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      code += characters[randomIndex];
-    }
-    return code;
-  }
 }

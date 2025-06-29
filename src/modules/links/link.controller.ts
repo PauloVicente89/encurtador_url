@@ -3,7 +3,6 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { Public } from 'src/core/decorators/public-route.decorator';
 import { IFiltersWithPagination } from 'src/utils/interfaces/filters-pagination';
-import { formatShortUrl } from 'src/utils/link-utilities';
 import { CreateShortUrlDto } from './dtos/create-short-url.dto';
 import { UpdateOriginalUrlDto } from './dtos/update-original-url.dto';
 import { IShortUrlResponse } from './interfaces/short-url-response';
@@ -33,7 +32,7 @@ export class LinkController {
   ): Promise<IShortUrlResponse> {
     const userId = req.user ? req.user['sub'] : null;
     const link = await this.linkService.create({ originalUrl: body.originalUrl }, userId);
-    return { shortUrl: formatShortUrl(link.code) };
+    return { shortUrl: this.linkService.formatShortUrl(link.code) };
   }
 
   @ApiResponse({
