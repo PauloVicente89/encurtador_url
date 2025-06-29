@@ -5,6 +5,7 @@ Stack:
 - Docker
 - NestJS
 - PostgreSQL
+- PM2
 
 Estrutura de dados:
 https://drive.google.com/file/d/1gmRosW1Ec8vLtZBnqSuStCdbG0qmE_X0/view?usp=sharing
@@ -20,6 +21,13 @@ $ docker-compose up -d --build
 URL: http://localhost:3000/docs
 
 * Para usar o seu link de redirecionamento, basta inserir o retorno da API na barra de pesquisa do navegador *
+
+## Observabilidade
+Para monitorar o funcionamento da API:
+- docker exec -it api pm2 monit
+
+Caso queira observar apenas as ultimas 200 linhas dos logs:
+- docker exec -it api pm2 logs --lines 200
 
 ## Pontos de melhoria
 1. Em caso de escalabilidade horizontal seria interessante dividir a aplicação em microserviços:

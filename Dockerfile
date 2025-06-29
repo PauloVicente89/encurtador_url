@@ -10,9 +10,10 @@ RUN npm ci
 
 COPY prisma ./prisma/
 RUN npx prisma generate
+RUN npm install pm2@latest -g
 
 COPY . .
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start:dev"]
+CMD ["pm2", "start", "dist/main.js", "--name", "teddy-open-finance", "--no-daemon"]
